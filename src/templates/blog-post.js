@@ -18,7 +18,13 @@ const options = {
     [MARKS.BOLD]: text => <Bold>{text}</Bold>,
   },
   renderNode: {
-    [BLOCKS.PARAGRAPH]: (node, children) => <Text>{children}</Text>,
+    [BLOCKS.EMBEDDED_ASSET]: node => {
+      if (!node.data || !node.data.target.fields) {
+        return <h1>Embedded asset is broken</h1>
+      }
+      return <img src={node.data.target.fields.file['en-US'].url} />
+    },
+    [BLOCKS.PARAGRAPH]: (_, children) => <Text>{children}</Text>,
   },
 }
 
