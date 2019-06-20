@@ -3,9 +3,24 @@ import { graphql } from 'gatsby'
 import Helmet from 'react-helmet'
 import get from 'lodash/get'
 import Img from 'gatsby-image'
+import { BLOCKS, MARKS } from "@contentful/rich-text-types"
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
+
 import Layout from '../components/layout'
 
 import heroStyles from '../components/hero.module.css'
+
+const Bold = ({ children }) => <span className="bold">{children}</span>
+const Text = ({ children }) => <p className="align-center">{children}</p>
+
+const options = {
+  renderMark: {
+    [MARKS.BOLD]: text => <Bold>{text}</Bold>,
+  },
+  renderNode: {
+    [BLOCKS.PARAGRAPH]: (node, children) => <Text>{children}</Text>,
+  },
+}
 
 class BlogPostTemplate extends React.Component {
   render() {
@@ -33,6 +48,7 @@ class BlogPostTemplate extends React.Component {
                 __html: post.body.childMarkdownRemark.html,
               }}
             />
+            {documentToReactComponents(post.richText.json, options)}
           </div>
         </div>
       </Layout>
@@ -61,6 +77,10 @@ export const pageQuery = graphql`
         childMarkdownRemark {
           html
         }
+      }
+
+      richText: childContentfulBlogPostMdxRichTextNode {
+        json
       }
     }
   }
